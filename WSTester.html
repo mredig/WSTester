@@ -1,4 +1,3 @@
-<!-- chat/templates/chat/room.html -->
 <!DOCTYPE html>
 <html>
 
@@ -17,7 +16,7 @@
     <input id="ws-submit" type="button" value="Send" />
 </body>
 <script>
-    var chatSocket = null;
+    var testWebSocket = null;
     var thingName = "(( WS TESTER )) - "
 
     function logToLogArea(message) {
@@ -35,7 +34,7 @@
     document.querySelector('#ws-submit').onclick = function (e) {
         var messageInputDom = document.querySelector('#ws-input');
         var message = messageInputDom.value;
-        chatSocket.send(message);
+        testWebSocket.send(message);
 
         messageInputDom.value = '';
     };
@@ -43,18 +42,18 @@
     document.querySelector('#serverConnectButton').onclick = function (e) {
         var server = document.querySelector('#serverField').value;
         logToLogArea(thingName + "Connecting to " + server);
-        chatSocket = new WebSocket(server);
+        testWebSocket = new WebSocket(server);
 
-        chatSocket.onopen = function (e) {
+        testWebSocket.onopen = function (e) {
             logToLogArea(thingName + "Connected to " + e.srcElement.URL);
         }
 
-        chatSocket.onmessage = function (e) {
+        testWebSocket.onmessage = function (e) {
             var message = e.data;
             logToLogArea(message);
         };
 
-        chatSocket.onclose = function (e) {
+        testWebSocket.onclose = function (e) {
             if (!e.wasClean) {
                 logToLogArea(thingName + 'Connection closed unexpectedly');
             }
@@ -63,10 +62,10 @@
     }
 
     document.querySelector('#serverDisconnectButton').onclick = function (e) {
-        server = chatSocket.URL;
+        server = testWebSocket.URL;
         
-        chatSocket.close();
-        chatSocket = null;
+        testWebSocket.close();
+        testWebSocket = null;
         logToLogArea(thingName + "Disconnecting from " + server);
     }
 
