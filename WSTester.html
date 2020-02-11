@@ -1,0 +1,71 @@
+<!-- chat/templates/chat/room.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>WS Tester</title>
+</head>
+<body>
+    <input id="serverField" placeholder="ws://server.com" value="ws://" type="text" size="50" /> 
+    <input id="serverConnectButton" type="button" value="Connect" />
+    <input id="serverDisconnectButton" type="button" value="Disconnect" />
+    <input id="clearButton" type="button" value="Clear" /><br />
+    <textarea id="logArea" cols="100" rows="20"></textarea><br/>
+    <input id="ws-input" type="text" size="100"/><br/>
+    <input id="ws-submit" type="button" value="Send"/>
+</body>
+<script>
+    var chatSocket = null;
+    var currentServer = "";
+    var thingName = "(( WS TESTER )) - "
+
+    function logToLogArea(message) {
+        var logArea = document.querySelector('#logArea');
+        logArea.value = (message + '\n' + logArea.value);
+    }
+
+    document.querySelector('#ws-input').focus();
+    document.querySelector('#ws-input').onkeyup = function(e) {
+        if (e.keyCode === 13) {  // enter, return
+            document.querySelector('#ws-submit').click();
+        }
+    };
+
+    document.querySelector('#ws-submit').onclick = function(e) {
+        var messageInputDom = document.querySelector('#ws-input');
+        var message = messageInputDom.value;
+        chatSocket.send(message);
+
+        messageInputDom.value = '';
+    };
+
+    document.querySelector('#serverConnectButton').onclick = function(e) {
+        var server = document.querySelector('#serverField').value;
+        logToLogArea(thingName + "Connecting to " + server);
+        chatSocket = new WebSocket(server);
+        currentServer = server
+
+        chatSocket.onmessage = function(e) {
+            var message = e.data;
+            logToLogArea(message);
+        };
+
+        chatSocket.onclose = function(e) {
+            if (!e.wasClean) {
+                logToLogArea(thingName + 'Chat socket closed unexpectedly');
+            }
+        };
+    }
+
+    document.querySelector('#serverDisconnectButton').onclick = function(e) {
+        chatSocket.close()
+        chatSocket = null
+        logToLogArea(thingName + "Disconnecting from " + currentServer);
+    }
+
+    document.querySelector('#clearButton').onclick = function(e) {
+        var logArea = document.querySelector('#logArea');
+        logArea.value = ""
+    }
+</script>
+</html>
