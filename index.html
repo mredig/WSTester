@@ -31,6 +31,7 @@
         }
     };
 
+    // WS send message
     document.querySelector('#ws-submit').onclick = function (e) {
         var messageInputDom = document.querySelector('#ws-input');
         var message = messageInputDom.value;
@@ -39,20 +40,28 @@
         messageInputDom.value = '';
     };
 
+
+    // WS connect action
     document.querySelector('#serverConnectButton').onclick = function (e) {
+        if (testWebSocket != null) {
+            testWebSocket.close()
+        }
         var server = document.querySelector('#serverField').value;
         logToLogArea(thingName + "Connecting to " + server);
         testWebSocket = new WebSocket(server);
 
+        // WS ON connect
         testWebSocket.onopen = function (e) {
             logToLogArea(thingName + "Connected to " + e.srcElement.URL);
         }
 
+        // WS on message
         testWebSocket.onmessage = function (e) {
             var message = e.data;
             logToLogArea(message);
         };
 
+        // WS on close
         testWebSocket.onclose = function (e) {
             if (!e.wasClean) {
                 logToLogArea(thingName + 'Connection closed unexpectedly');
@@ -61,6 +70,7 @@
         };
     }
 
+    // WS disconnect action
     document.querySelector('#serverDisconnectButton').onclick = function (e) {
         server = testWebSocket.URL;
         
@@ -69,6 +79,7 @@
         logToLogArea(thingName + "Disconnecting from " + server);
     }
 
+    // WS clear action
     document.querySelector('#clearButton').onclick = function (e) {
         var logArea = document.querySelector('#logArea');
         logArea.value = "";
